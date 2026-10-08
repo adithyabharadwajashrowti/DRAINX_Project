@@ -1,0 +1,10 @@
+import {createContext,useContext,useEffect,useState,ReactNode} from 'react'; import {User} from '@supabase/supabase-js'; import {supabase} from '../lib/supabase'; import {Profile} from '../types/database';
+type Ctx={user:User|null;profile:Profile|null;loading:boolean;signIn:(e:string,p:string)=>Promise<{error:Error|null}>;signUp:(e:string,p:string,n:string)=>Promise<{error:Error|null}>;signOut:()=>Promise<void>;refreshProfile:()=>Promise<void>};
+const AuthContext=createContext<Ctx>({user:null,profile:null,loading:true,signIn:async()=>({error:null}),signUp:async()=>({error:null}),signOut:async()=>{},refreshProfile:async()=>{}});
+export function AuthProvider({children}:{children:ReactNode}){const[user,setUser]=useState<User|null>(null);const[profile,setProfile]=useState<Profile|null>(null);const[loading,setLoading]=useState(true);
+const loadProfile=async(u:User|null)=>{if(!u){setProfile(null);return;} const {data}=await supabase.from('profiles').select('*').eq('id',u.id).maybeSingle(); setProfile(data as Profile|null);};
+useEffect(()=>{supabase.auth.getSession().then(async({data})=>{setUser(data.session?.user??null);await loadProfile(data.session?.user??null);setLoading(false)}); const {data:{subscription}}=supabase.auth.onAuthStateChange(async(_e,s)=>{setUser(s?.user??null);await loadProfile(s?.user??null);setLoading(false)}); return()=>subscription.unsubscribe()},[]);
+const signIn=async(e:string,p:string)=>{const {error}=await supabase.auth.signInWithPassword({email:e,password:p});return{error:error?new Error(error.message):null}};
+const signUp=async(e:string,p:string,n:string)=>{const {error}=await supabase.auth.signUp({email:e,password:p,options:{data:{full_name:n}}});return{error:error?new Error(error.message):null}};
+const signOut=async()=>{await supabase.auth.signOut()}; return <AuthContext.Provider value={{user,profile,loading,signIn,signUp,signOut,refreshProfile:async()=>loadProfile(user)}}>{children}</AuthContext.Provider>}
+export const useAuth=()=>useContext(AuthContext);

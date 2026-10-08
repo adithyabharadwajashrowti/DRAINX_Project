@@ -1,0 +1,18 @@
+-- DRAIN X telemetry RLS reference
+--
+-- The prototype has used a telemetry INSERT policy for the
+-- DRAINX-NODE-01 device.
+--
+-- Before changing production policies, inspect the live database
+-- in Supabase and preserve existing working policies.
+
+-- Conceptual policy:
+--
+-- operation: INSERT
+-- role: anon
+-- with check:
+--   device_id = 'DRAINX-NODE-01'
+--
+-- Production recommendation:
+-- Move telemetry ingestion behind authenticated/server-side
+-- infrastructure or a Supabase Edge Function.

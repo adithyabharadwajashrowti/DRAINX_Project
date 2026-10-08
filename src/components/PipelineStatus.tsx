@@ -1,0 +1,1 @@
+export default function PipelineStatus({connected}:{connected:boolean}){return <div className="card"><div className="eyebrow">PIPELINE</div><div className="pipeline"><span className="dot" data-on={connected}/><b>{connected?'ONLINE':'DISCONNECTED'}</b></div><p>Arduino → Gateway → Supabase → Dashboard</p></div>}
