@@ -153,5 +153,5 @@ Start with `DEVELOPER_HANDOFF.md`, then read:
 - `docs/API_AND_DATA_FLOW.md`
 - `docs/DEVELOPER_SETUP.md`
 
-## Websote Link
+## Website Link
 https://cwjudahhaabgovdbupaw.supabase.co
